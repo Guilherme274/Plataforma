@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class Player : MonoBehaviour
 {
@@ -14,16 +15,19 @@ public class Player : MonoBehaviour
     Animator anim;
     bool noChao = false;
     bool pulou = false;
-    [SerializeField] GameObject mensagem;
+    //[SerializeField] GameObject mensagem;
     bool entrou = false;
     int lado = 0;
     bool morreu = false;
-    [SerializeField] Transform spawn;
+    [SerializeField] Vector2 spawn;
+    [SerializeField] GameObject prefabRobo;
+    CinemachineVirtualCamera cineCamera;
 
        private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        cineCamera = FindObjectOfType<CinemachineVirtualCamera>();
     }
 
     private void FixedUpdate()
@@ -71,10 +75,10 @@ public class Player : MonoBehaviour
             transform.localScale = new Vector2(lado, transform.localScale.y);
         }
 
-        if (Input.GetKeyDown(KeyCode.E) && entrou)
-        {
-            mensagem.SetActive(true);
-        }
+        //if (Input.GetKeyDown(KeyCode.E) && entrou)
+        //{
+        //    mensagem.SetActive(true);
+        //}
         
 
             horizontal = Input.GetAxisRaw("Horizontal");
@@ -85,8 +89,11 @@ public class Player : MonoBehaviour
         
         if(morreu)
         {
+            GameObject roboInstanciado = Instantiate(prefabRobo, spawn, Quaternion.identity);
             Destroy(gameObject);
-            //Instantiate() Instanciamento personagem após morte
+            morreu = false;
+            cineCamera.Follow = roboInstanciado.transform;
+            
         }
        
     }
@@ -103,21 +110,27 @@ public class Player : MonoBehaviour
             
         }
 
-    
+        if (collision.gameObject.tag == "serra")
+        {    
+            morreu = true;
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("placa"))
-        {
-            entrou = true;
+        //if(collision.CompareTag("placa"))
+        //{
+        //    entrou = true;
 
-        }
+        //}
 
         if (collision.CompareTag("acido"))
         {
             morreu = true;
         }
+
+        
     }
 
 
@@ -126,7 +139,7 @@ public class Player : MonoBehaviour
     {
         entrou = false;
 
-        mensagem.SetActive(false);
+        //mensagem.SetActive(false);
     }
 
 
