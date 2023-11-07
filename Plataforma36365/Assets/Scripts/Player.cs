@@ -22,12 +22,22 @@ public class Player : MonoBehaviour
     [SerializeField] Vector2 spawn;
     [SerializeField] GameObject prefabRobo;
     CinemachineVirtualCamera cineCamera;
+    Porta porta;
+    public bool apertou = false;
+    bool pertoInterruptor = false;
+    [SerializeField] float time;
+    [SerializeField] int tempo;
+    bool comecaContagem;
+    Interruptor interruptor;
 
        private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         cineCamera = FindObjectOfType<CinemachineVirtualCamera>();
+        porta = FindObjectOfType<Porta>();
+        interruptor = GetComponent<Interruptor>();
+       
     }
 
     private void FixedUpdate()
@@ -75,13 +85,36 @@ public class Player : MonoBehaviour
             transform.localScale = new Vector2(lado, transform.localScale.y);
         }
 
-        //if (Input.GetKeyDown(KeyCode.E) && entrou)
-        //{
-        //    mensagem.SetActive(true);
-        //}
-        
+        if(Input.GetKeyDown(KeyCode.E) && pertoInterruptor)
+        {
+            apertou= true;
+            comecaContagem = true;
+            //interruptor.MudarVermelho();
+        }
 
-            horizontal = Input.GetAxisRaw("Horizontal");
+        if(comecaContagem)
+        {
+            tempo++;
+        }
+
+        if(tempo >= 1427)
+        {
+            tempo = 0;
+            apertou = false;
+            comecaContagem = false;
+            //interruptor.MudarVerde();
+        }
+       
+        //if(tempo >=3)
+        //{
+        //    CancelInvoke("temporizador");
+        //    apertou= false;
+        //}
+
+        porta.anim.SetBool("abriu", entrou);
+        porta.anim.SetBool("trancada", apertou);
+
+        horizontal = Input.GetAxisRaw("Horizontal");
 
        
          anim.SetFloat("posicaoX", Mathf.Abs(rb.velocity.x));
@@ -119,15 +152,19 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if(collision.CompareTag("placa"))
-        //{
-        //    entrou = true;
-
-        //}
+        if (collision.CompareTag("porta"))
+        {
+            entrou = true;
+        }
 
         if (collision.CompareTag("acido"))
         {
             morreu = true;
+        }
+
+        if(collision.CompareTag("interruptor"))
+        {
+            pertoInterruptor = true;
         }
 
         
@@ -137,10 +174,12 @@ public class Player : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        entrou = false;
+        if(collision.CompareTag("porta"))
+        {
+           entrou = false;
 
-        //mensagem.SetActive(false);
+        }
+
+        
     }
-
-
 }
