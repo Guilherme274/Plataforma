@@ -15,7 +15,6 @@ public class Player : MonoBehaviour
     Animator anim;
     bool noChao = false;
     bool pulou = false;
-    //[SerializeField] GameObject mensagem;
     bool entrou = false;
     int lado = 0;
     bool morreu = false;
@@ -25,9 +24,6 @@ public class Player : MonoBehaviour
     Porta porta;
     public bool apertou = false;
     bool pertoInterruptor = false;
-    [SerializeField] float time;
-    [SerializeField] int tempo;
-    bool comecaContagem;
     Interruptor interruptor;
 
        private void Awake()
@@ -36,7 +32,7 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         cineCamera = FindObjectOfType<CinemachineVirtualCamera>();
         porta = FindObjectOfType<Porta>();
-        interruptor = GetComponent<Interruptor>();
+        interruptor = FindObjectOfType<Interruptor>();
        
     }
 
@@ -88,28 +84,9 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E) && pertoInterruptor)
         {
             apertou= true;
-            comecaContagem = true;
-            //interruptor.MudarVermelho();
+            Invoke("fecharPorta", 3f);
+            interruptor.MudarVermelho();
         }
-
-        if(comecaContagem)
-        {
-            tempo++;
-        }
-
-        if(tempo >= 1427)
-        {
-            tempo = 0;
-            apertou = false;
-            comecaContagem = false;
-            //interruptor.MudarVerde();
-        }
-       
-        //if(tempo >=3)
-        //{
-        //    CancelInvoke("temporizador");
-        //    apertou= false;
-        //}
 
         porta.anim.SetBool("abriu", entrou);
         porta.anim.SetBool("trancada", apertou);
@@ -179,7 +156,12 @@ public class Player : MonoBehaviour
            entrou = false;
 
         }
+    }
 
-        
+    public void fecharPorta()
+    {
+        entrou = false;
+        apertou = false;
+        interruptor.MudarVerde();
     }
 }

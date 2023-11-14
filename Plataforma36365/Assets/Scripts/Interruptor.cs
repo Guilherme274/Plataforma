@@ -7,7 +7,7 @@ public class Interruptor : MonoBehaviour
     [SerializeField] Sprite vermelho;
     [SerializeField] Sprite verde;
     SpriteRenderer spriteRenderer;
-    float tempo;
+    
 
     private void Start()
     {
